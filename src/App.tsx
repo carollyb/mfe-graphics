@@ -1,14 +1,15 @@
 import { ClientThemeProvider } from '@carollyb/bank-design-system';
 import GraphicApp from './components/GraphicApp';
+import type { Transaction } from './types/Transaction';
 
 type RemoteAppProps = {
-  testeMfe: string;
+  transactions: Transaction[];
 };
 
-export default function App({ testeMfe }: RemoteAppProps) {
+export default function App({ transactions }: RemoteAppProps) {
   return (
     <ClientThemeProvider>
-      <GraphicApp testeMfe={testeMfe} />
+      <GraphicApp transactions={transactions} />
     </ClientThemeProvider>
   );
 }

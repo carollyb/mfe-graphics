@@ -7,8 +7,8 @@
     "dev": "vite --port 3001 --strictPort",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview --port 5001 --strictPort",
-    "serve": "vite preview --port 5001 --strictPort"
+    "preview": "vite preview --port 3001 --strictPort",
+    "serve": "vite preview --port 3001 --strictPort"
   },
   "dependencies": {
     "@carollyb/bank-design-system": "^0.1.9",

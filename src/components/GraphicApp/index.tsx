@@ -13,7 +13,9 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Typography } from '@mui/material';
+import { Card, Typography } from '@mui/material';
+import type { Transaction } from '../../types/Transaction';
+import { getBalanceImpact } from '../../utils/getBalanceImpact';
 
 ChartJS.register(
   CategoryScale,
@@ -25,54 +27,15 @@ ChartJS.register(
   Legend
 );
 
-type Transaction = {
-  id: string;
-  accountId: string;
-  type: string;
-  value: number;
-  date: string;
-};
-
 interface Props {
-  testeMfe: string;
-  transactions?: Transaction[];
+  transactions: Transaction[];
   initialBalance?: number;
   height?: number;
 }
 
 export default function GraphicApp({
-  transactions = [
-    {
-      id: '1',
-      accountId: 'a',
-      type: 'Credit',
-      value: 200,
-      date: '2024-12-16T18:29:05.170Z',
-    },
-    {
-      id: '2',
-      accountId: 'a',
-      type: 'Debit',
-      value: -200,
-      date: '2024-12-17T18:29:06.250Z',
-    },
-    {
-      id: '3',
-      accountId: 'a',
-      type: 'Debit',
-      value: -200,
-      date: '2024-12-18T18:29:08.734Z',
-    },
-    {
-      id: '4',
-      accountId: 'a',
-      type: 'Credit',
-      value: 200,
-      date: '2024-12-19T18:29:08.734Z',
-    },
-  ],
-  initialBalance = 700,
-  testeMfe,
+  transactions,
+  initialBalance = 0,
 }: Props) {
   const theme = useTheme();
   const sorted = [...transactions].sort(
@@ -84,7 +47,7 @@ export default function GraphicApp({
   let balance = initialBalance;
 
   for (const tx of sorted) {
-    balance += tx.value;
+    balance += getBalanceImpact(tx.type, tx.value);
     labels.push(new Date(tx.date).toLocaleString());
     balances.push(balance);
   }
@@ -96,7 +59,7 @@ export default function GraphicApp({
         label: 'Saldo',
         data: balances,
         fill: false,
-        borderColor: theme?.palette?.primary?.main,
+        borderColor: theme?.palette?.secondary?.main,
         backgroundColor: theme?.palette?.secondary?.main,
         tension: 0.2,
         pointRadius: 4,
@@ -108,14 +71,14 @@ export default function GraphicApp({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: true },
-      title: { display: true, text: 'Saldo ao longo do tempo' },
+      legend: { display: false },
+      title: { display: false },
       tooltip: { mode: 'index', intersect: false },
     },
     interaction: { mode: 'nearest', axis: 'x', intersect: false },
     scales: {
-      y: { title: { display: true, text: 'Value' } },
-      x: { title: { display: true, text: 'Date' } },
+      y: { title: { display: true, text: 'Saldo' } },
+      x: { title: { display: true, text: 'Data' } },
     },
   };
 
@@ -128,13 +91,18 @@ export default function GraphicApp({
   };
 
   return (
-    <div>
-      <Typography sx={{ textAlign: 'center', margin: '8px 0' }}>
-        {testeMfe}
+    <Card sx={{ padding: 2, backgroundColor: theme.palette.primary.main }}>
+      <Typography
+        variant='h6'
+        component='h2'
+        gutterBottom
+        sx={{ flexShrink: 0, color: 'text.disabled' }}
+      >
+        Evolução do Saldo
       </Typography>
       <div style={containerStyle}>
         <Line data={data} options={options} />
       </div>
-    </div>
+    </Card>
   );
 }
